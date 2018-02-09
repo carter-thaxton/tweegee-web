@@ -1,3 +1,6 @@
 [submodule "bin/tws-to-twee-converter"]
 	path = bin/tws-to-twee-converter
 	url = https://github.com/carter-thaxton/tws-to-twee-converter.git
+[submodule "Tweegee"]
+	path = Tweegee
+	url = https://github.com/carter-thaxton/Tweegee.git
