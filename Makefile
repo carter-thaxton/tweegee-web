@@ -30,4 +30,8 @@ pull:
 	git pull && git submodule update --init --recursive
 
 
+open:
+	open http://ec2-18-217-244-234.us-east-2.compute.amazonaws.com:3001
+
+
 .PHONY: tweegee webapp
