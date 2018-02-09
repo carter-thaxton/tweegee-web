@@ -1,0 +1,66 @@
+
+Running on Linux
+----------------
+
+VirtualBox
+----------
+
+Follow VirtualBox instructions from:
+https://theswiftdev.com/2017/11/30/how-to-run-swift-on-linux/
+
+
+RVM & Ruby
+----------
+https://github.com/rvm/ubuntu_rvm
+
+sudo usermod -a -G rvm <username>
+
+rvm install 2.3.4
+rvm gemset create tweegee
+rvm use 2.3.4@tweegee --default
+
+gem install twee2
+
+
+NVM & Node
+----------
+
+Use NVM instructions from:
+https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04
+
+curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh -o install_nvm.sh
+bash install_nvm.sh
+
+nvm install v6.12.3
+
+
+EC2 Instance
+------------
+
+ec2-18-217-244-234.us-east-2.compute.amazonaws.com
+
+ssh -i tweegee.pem ubuntu@ec2-18-217-244-234.us-east-2.compute.amazonaws.com
+
+
+
+
+Project Structure
+-----------------
+
+- Tweegee
+  swift library and command-line tool
+  built with swift package manager into .build/debug/tweegee
+
+- bin
+  tws-to-twee-converter  (python project)
+  tws2twee
+  tws2html
+  html2twee
+  twee2html
+  @tweegee  (link to ../Tweegee/.build/debug/tweegee)
+
+- tweek
+  web tool used by me and Dave to test out twine documents
+  simple express app, that uses tweegee to convert from .tw2 files to .json
+
+

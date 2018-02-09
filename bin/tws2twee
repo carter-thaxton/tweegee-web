@@ -1,0 +1,2 @@
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PYTHONIOENCODING=utf-8 python $DIR/tws-to-twee-converter/twsimporter.py "$1" -twee2 2> /dev/null

@@ -1,0 +1,5 @@
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+TMPFILE=$(mktemp)
+$DIR/tws2twee "$1" > $TMPFILE
+$DIR/twee2html "$TMPFILE"
