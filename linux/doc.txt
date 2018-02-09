@@ -42,6 +42,12 @@ ec2-18-217-244-234.us-east-2.compute.amazonaws.com
 ssh -i tweegee.pem ubuntu@ec2-18-217-244-234.us-east-2.compute.amazonaws.com
 
 
+Nginx
+-----
+
+To work with port 80, and run at startup, followed these instructions:
+https://hackernoon.com/tutorial-creating-and-managing-a-node-js-server-on-aws-part-2-5fbdea95f8a1
+
 
 
 Project Structure
