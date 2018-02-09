@@ -1,10 +1,8 @@
-#!/usr/bin/env node
-
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('./app');
 var debug = require('debug')('app:server');
 var http = require('http');
 
@@ -19,13 +17,12 @@ app.set('port', port);
  * Create HTTP server.
  */
 
+debug('Starting app in ' + app.get('env') + ' mode');
 var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-debug('Starting app in ' + app.get('env') + ' mode');
 
 server.listen(port);
 server.on('error', onError);

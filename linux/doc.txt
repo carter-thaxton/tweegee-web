@@ -48,6 +48,8 @@ Nginx
 To work with port 80, and run at startup, followed these instructions:
 https://hackernoon.com/tutorial-creating-and-managing-a-node-js-server-on-aws-part-2-5fbdea95f8a1
 
+Nice way to use forever and crontab:
+https://eladnava.com/deploying-resilient-node-js-apps-with-forever-and-nginx/
 
 
 Project Structure

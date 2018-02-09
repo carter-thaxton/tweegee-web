@@ -22,7 +22,7 @@ pull:
 
 
 start:
-	cd webapp && DEBUG=app:* npm start
+	cd webapp && npm start
 
 open:
 	open http://ec2-18-217-244-234.us-east-2.compute.amazonaws.com
