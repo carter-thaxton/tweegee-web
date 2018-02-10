@@ -4,6 +4,17 @@ var exec = require('child_process').exec
 
 var binDir = path.join(__dirname, '../bin')
 
+function processFile(file, cb) {
+  convertToTwee(file, function(err, data) {
+    if (err) return cb(err)
+    runTweegee(data.tweeFile, function(err, stdout) {
+      if (err) return cb(err)
+      data.stdout = stdout
+      cb(null, data)
+    })
+  })
+}
+
 function convertToTwee(file, cb) {
   var inputFile = file.path
   var originalName = file.originalname
@@ -39,4 +50,13 @@ function convertToTwee(file, cb) {
   })
 }
 
-exports.convertToTwee = convertToTwee
+// given a twee file, return stdout of executing tweegee
+function runTweegee(tweeFile, cb) {
+  var cmd = binDir + '/tweegee ' + tweeFile
+  exec(cmd, function(err, stdout, stderr) {
+    if (err) return cb(err)
+    cb(null, stdout)
+  })
+}
+
+module.exports = processFile

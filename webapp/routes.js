@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 })
 
 router.post('/file_upload', function(req, res, next) {
-  tweegee.convertToTwee(req.file, function(err, data) {
+  tweegee(req.file, function(err, data) {
     if (err) return next(err)
     res.json(data)
   })
