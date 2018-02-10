@@ -2,11 +2,11 @@ $(function() {
 
   // Setup form upload
   $('form').submit(function(evt) {
-    evt.preventDefault();
-    var file = $('#file').val().trim();
+    evt.preventDefault()
+    var file = $('#file').val().trim()
     if (file) {
-      var formData = new FormData($(this)[0]);
-      console.log("Sending file...");
+      var formData = new FormData($(this)[0])
+      console.log("Sending file...")
       $.ajax({
         url: 'file_upload',
         type: 'POST',
@@ -18,21 +18,23 @@ $(function() {
         processData: false,
         success: show_result,
         error: handle_error,
-      });
+      })
     } else {
-      console.log("No file selected");
+      console.log("No file selected")
     }
-    return false;
-  });
+    return false
+  })
 
   function handle_error(error) {
-    alert(JSON.stringify(error, null, 2));
+    var errText = JSON.stringify(error, null, 2);
+    console.log(errText)
+    alert(errText)
   }
 
   function show_result(response) {
-    console.log(response);
-    var result_text = JSON.stringify(response, null, 2);
-    $('.results').text(result_text);
+    console.log(response)
+    var result_text = JSON.stringify(response, null, 2)
+    $('.results').text(result_text)
   }
 
-});
+})

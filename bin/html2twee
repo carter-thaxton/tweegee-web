@@ -1,1 +1,2 @@
+#!/bin/bash
 twee2 decompile "$1" >(cat) > /dev/null 2>&1

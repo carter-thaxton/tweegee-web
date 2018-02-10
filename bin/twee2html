@@ -1,1 +1,2 @@
+#!/bin/bash
 twee2 build "$1" >(cat) --format=SugarCube > /dev/null 2>&1
