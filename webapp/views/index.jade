@@ -6,6 +6,12 @@ block javascripts
 block content
   h1 Tweegee
 
+  h3 Upload a Twine or Twee file
   form(action="/file_upload", enctype="multipart/form-data", method="post")
-    input(type="file", name="file")
-    input(type="submit", value="Upload file")
+    input#file(type="file", name="file")
+    input#submit(type="submit", value="Upload file")
+
+  br
+  hr
+
+  pre.results
