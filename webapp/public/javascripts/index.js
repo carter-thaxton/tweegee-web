@@ -33,8 +33,11 @@ $(function() {
 
   function show_result(response) {
     console.log(response)
+    var stdout = response.stdout
+    delete response.stdout
     var result_text = JSON.stringify(response, null, 2)
-    $('.results').text(result_text)
+    $('#result').text(result_text)
+    $('#stdout').text(stdout)
   }
 
 })
