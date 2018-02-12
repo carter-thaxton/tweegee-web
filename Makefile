@@ -24,6 +24,9 @@ pull:
 start:
 	cd webapp && npm start
 
+restart:
+	cd webapp && forever restart 0
+
 open:
 	open http://ec2-18-217-244-234.us-east-2.compute.amazonaws.com
 
