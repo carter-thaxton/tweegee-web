@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "DEBUG=app:* node server.js"
+    "start": "DEBUG=app:* forever -a -o log/out.log -e log/err.log --watchIgnore '{uploads,log}/**' $FOREVER_ARGS start server.js",
+    "stop": "forever stop server.js",
+    "restart": "forever restart server.js"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
+    "forever": "^0.15.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.0",
     "multer": "^1.3.0",

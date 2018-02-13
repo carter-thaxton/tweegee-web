@@ -26,7 +26,7 @@ $(function() {
   })
 
   function handle_error(error) {
-    var errText = JSON.stringify(error, null, 2);
+    var errText = JSON.stringify(error, null, 2)
     console.log(errText)
     alert(errText)
   }
