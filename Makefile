@@ -24,6 +24,9 @@ pull:
 start:
 	cd webapp && npm start
 
+start-watch:
+	cd webapp && FOREVER_ARGS=-w npm start
+
 stop:
 	cd webapp && npm stop
 
