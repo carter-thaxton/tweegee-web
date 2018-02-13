@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var multer = require('multer');
+var helmet = require('helmet');
 
 var routes = require('./routes');
 
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer({dest: path.join(__dirname, 'uploads')}).single('file'));
+app.use(helmet());
 
 app.use('/', routes);
 
