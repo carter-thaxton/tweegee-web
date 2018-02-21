@@ -17,10 +17,12 @@ webapp-clean:
 	rm -rf webapp/node_modules
 
 
-update-tweegee:
+update-tweegee:		tweegee
 	git status | grep -E 'modified:\s+Tweegee \(new commits\)' > /dev/null
+	cd Tweegee && git push
 	git add Tweegee
 	git commit -m "Update Tweegee"
+	git push
 
 
 pull:
