@@ -8,7 +8,13 @@ function processFile(file, cb) {
   convertToTwee(file, function(err, data) {
     if (err) return cb(err)
     runTweegee(data.tweeFile, function(err, stdout) {
-      if (err) return cb(err)
+      if (err) {
+        data.ok = false
+        data.exitCode = err.code
+      } else {
+        data.ok = true
+        data.exitCode = 0
+      }
       data.stdout = stdout
       cb(null, data)
     })
@@ -45,7 +51,7 @@ function convertToTwee(file, cb) {
   console.log("Executing: " + cmd)
 
   exec(cmd, function(err, stdout, stderr) {
-    if (err) return cb(err)
+    if (err) return cb(new Error('Could not convert file to twee2'))
     cb(null, {ok: true, originalName: originalName, originalSize: file.size, inputFile: inputFile, tweeFile: tweeFile})
   })
 }
@@ -53,10 +59,7 @@ function convertToTwee(file, cb) {
 // given a twee file, return stdout of executing tweegee
 function runTweegee(tweeFile, cb) {
   var cmd = binDir + '/tweegee ' + tweeFile
-  exec(cmd, {maxBuffer: 10 * 1024 * 1024}, function(err, stdout, stderr) {
-    if (err) return cb(err)
-    cb(null, stdout)
-  })
+  exec(cmd, {maxBuffer: 10 * 1024 * 1024}, cb)
 }
 
 module.exports = processFile

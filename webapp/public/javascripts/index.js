@@ -44,18 +44,19 @@ $(function() {
   function handle_error(error) {
     uploading = false
     update_upload_visibility()
-    var errText = JSON.stringify(error, null, 2)
-    console.log(errText)
-    alert(errText)
+    var err_text = JSON.stringify(error, null, 2)
+    console.log(err_text)
+    $('#result').text(err_text)
+    $('#stdout').text("")
   }
 
   function show_result(response) {
     uploading = false
     update_upload_visibility()
-    console.log(response)
     var stdout = response.stdout
     delete response.stdout
     var result_text = JSON.stringify(response, null, 2)
+    console.log(response)
     $('#result').text(result_text)
     $('#stdout').text(stdout)
   }
