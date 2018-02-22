@@ -53,7 +53,7 @@ function convertToTwee(file, cb) {
 // given a twee file, return stdout of executing tweegee
 function runTweegee(tweeFile, cb) {
   var cmd = binDir + '/tweegee ' + tweeFile
-  exec(cmd, {maxBuffer: 1024 * 1024}, function(err, stdout, stderr) {
+  exec(cmd, {maxBuffer: 10 * 1024 * 1024}, function(err, stdout, stderr) {
     if (err) return cb(err)
     cb(null, stdout)
   })
