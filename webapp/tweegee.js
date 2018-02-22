@@ -6,7 +6,7 @@ var binDir = path.join(__dirname, '../bin')
 
 function processFile(file, cb) {
   convertToTwee(file, function(err, data) {
-    if (err) return cb(err)
+    if (err) return cb(err, data)
     runTweegee(data.tweeFile, function(err, stdout) {
       if (err) {
         data.ok = false
@@ -51,8 +51,10 @@ function convertToTwee(file, cb) {
   console.log("Executing: " + cmd)
 
   exec(cmd, function(err, stdout, stderr) {
-    if (err) return cb(new Error('Could not convert file to twee2'))
-    cb(null, {ok: true, originalName: originalName, originalSize: file.size, inputFile: inputFile, tweeFile: tweeFile})
+    var data = {ok: false, originalName: originalName, originalSize: file.size, inputFile: inputFile, tweeFile: tweeFile}
+    if (err) return cb(new Error('Could not convert file to twee2'), data)
+    data.ok = true
+    cb(null, data)
   })
 }
 

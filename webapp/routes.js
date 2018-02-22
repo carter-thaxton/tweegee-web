@@ -11,10 +11,13 @@ router.get('/', function(req, res, next) {
 router.post('/file_upload', function(req, res, next) {
   tweegee(req.file, function(err, data) {
     if (err) {
-      res.json({ok: false, error: err.message})
-    } else {
-      res.json(data)
+      data = data || {}
+      data.ok = false
+      data.error = err.message
+      res.status(400)
     }
+    // send json response no matter what happens as result of calling tweegee
+    res.json(data)
   })
 })
 

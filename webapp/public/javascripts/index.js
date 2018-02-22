@@ -36,24 +36,26 @@ $(function() {
         processData: false,
         success: show_result,
         error: handle_error,
+        complete: function() { uploading = false; update_upload_visibility() },
       })
     }
     return false
   })
 
   function handle_error(error) {
-    uploading = false
-    update_upload_visibility()
-    var err_text = JSON.stringify(error, null, 2)
-    console.log(err_text)
-    $('#result').text(err_text)
-    $('#stdout').text("")
+    if (error.responseJSON) {
+      show_result(error.responseJSON)
+    } else {
+      console.log("Received unexpected error")
+      var err_text = JSON.stringify(error, null, 2)
+      console.log(err_text)
+      $('#result').text(err_text)
+      $('#stdout').text("")
+    }
   }
 
   function show_result(response) {
-    uploading = false
-    update_upload_visibility()
-    var stdout = response.stdout
+    var stdout = response.stdout || ""
     delete response.stdout
     var result_text = JSON.stringify(response, null, 2)
     console.log(response)
