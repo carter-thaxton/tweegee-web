@@ -4,7 +4,7 @@ var exec = require('child_process').exec
 
 var binDir = path.join(__dirname, '../bin')
 
-function processFile(file, cb) {
+function processFile(file, opts, cb) {
   convertToTwee(file, function(err, data) {
     if (err) return cb(err, data)
     runTweegee(data.tweeFile, function(err, stdout) {
@@ -15,7 +15,11 @@ function processFile(file, cb) {
         data.ok = true
         data.exitCode = 0
       }
-      data.stdout = stdout
+      try {
+        data.result = JSON.parse(stdout)
+      } catch (err) {
+        data.stdout = stdout
+      }
       cb(null, data)
     })
   })

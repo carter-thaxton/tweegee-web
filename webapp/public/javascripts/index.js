@@ -26,7 +26,7 @@ $(function() {
       update_upload_visibility()
 
       $.ajax({
-        url: 'file_upload',
+        url: 'tweegee',
         type: 'POST',
         data: formData,
         async: true,
@@ -50,17 +50,19 @@ $(function() {
       var err_text = JSON.stringify(error, null, 2)
       console.log(err_text)
       $('#result').text(err_text)
-      $('#stdout').text("")
     }
   }
 
   function show_result(response) {
-    var stdout = response.stdout || ""
-    delete response.stdout
-    var result_text = JSON.stringify(response, null, 2)
+    var result = response.result
+    delete response.result
     console.log(response)
+    console.log(result)
+
+    var result_text = ""
+    if (response) result_text += JSON.stringify(response, null, 2)
+    if (result) result_text += "\n\n" + JSON.stringify(result, null, 2)
     $('#result').text(result_text)
-    $('#stdout').text(stdout)
   }
 
 })

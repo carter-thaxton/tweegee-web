@@ -8,15 +8,20 @@ router.get('/', function(req, res, next) {
   res.render('index');
 })
 
-router.post('/file_upload', function(req, res, next) {
-  tweegee(req.file, function(err, data) {
+router.post('/tweegee', function(req, res, next) {
+  tweegee(req.file, req.params, function(err, data) {
     if (err) {
       data = data || {}
       data.ok = false
       data.error = err.message
       res.status(400)
     }
-    // send json response no matter what happens as result of calling tweegee
+
+    // Don't send these back to the client
+    delete data.inputFile
+    delete data.tweeFile
+
+    // Send json response no matter what happens as result of calling tweegee
     res.json(data)
   })
 })
