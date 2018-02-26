@@ -25,6 +25,9 @@ $(function() {
       uploading = true
       update_upload_visibility()
 
+      $('#errors').empty()
+      $('#story').hide()
+
       $.ajax({
         url: 'tweegee',
         type: 'POST',
@@ -44,25 +47,53 @@ $(function() {
 
   function handle_error(error) {
     if (error.responseJSON) {
+      // tweegee response will be 400 if there are errors, but still continue to display
       show_result(error.responseJSON)
     } else {
-      console.log("Received unexpected error")
       var err_text = JSON.stringify(error, null, 2)
+      console.log("Received unexpected error")
       console.log(err_text)
-      $('#result').text(err_text)
+      show_error("Unexpected error: " + err_text)
     }
   }
 
   function show_result(response) {
-    var result = response.result
-    delete response.result
-    console.log(response)
-    console.log(result)
+    if (response.error) {
+      return show_error(response.error)
+    }
 
-    var result_text = ""
-    if (response) result_text += JSON.stringify(response, null, 2)
-    if (result) result_text += "\n\n" + JSON.stringify(result, null, 2)
-    $('#result').text(result_text)
+    var story = response.result
+    console.log(story)
+    if (!story) {
+      return show_error("No story in response")
+    }
+
+    // Show each error in the story
+    if (story.errors) {
+      story.errors.forEach(function (error) {
+        show_error(error.message, error)
+      })
+    }
+
+    // Show attributes of story
+    $('#title').text(story.title || '')
+    $('#author').text(story.author ? 'by ' + story.author : '')
+    $('#passage_count').text(story.passageCount)
+    $('#story').show()
+  }
+
+  function show_error(msg, err) {
+    var div = $('<div class="error"/>')
+    function addLine(line) {
+      div.append($('<div/>').text(line))
+    }
+
+    addLine(msg)
+    if (err) {
+      addLine("Line " + err.passageLineNumber + " in passage: " + err.passage)
+      addLine(err.line)
+    }
+    $('#errors').append(div)
   }
 
 })

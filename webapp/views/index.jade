@@ -7,11 +7,21 @@ block content
   h1 Tweegee
 
   h3 Upload a Twine or Twee file
-  form#upload_form(action="/file_upload", enctype="multipart/form-data", method="post")
+  form#upload_form(enctype="multipart/form-data", method="post")
     input#file(type="file", name="file", accept=".tws,.twee,.tw2,.html")
     input#submit(type="submit", value="Upload file")
 
   br
   hr
 
-  pre#result.results
+  #errors
+
+  #story.hidden
+    h2#title
+    h3#author
+
+    ul#statistics
+      li Passage count:&nbsp;
+        span#passage_count
+      li Word count:&nbsp;
+        span#word_count
