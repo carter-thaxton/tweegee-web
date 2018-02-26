@@ -78,7 +78,8 @@ $(function() {
     // Show attributes of story
     $('#title').text(story.title || '')
     $('#author').text(story.author ? 'by ' + story.author : '')
-    $('#passage_count').text(story.passageCount)
+    $('#passage_count').text(story.statistics.passageCount)
+    $('#word_count').text(story.statistics.wordCount)
     $('#story').show()
   }
 
