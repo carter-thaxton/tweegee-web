@@ -81,6 +81,8 @@ $(function() {
     $('#passage_count').text(story.statistics.passageCount)
     $('#word_count').text(story.statistics.wordCount)
     $('#story').show()
+
+    window.twee_engine = new TweeEngine(story)
   }
 
   function show_error(msg, err) {
