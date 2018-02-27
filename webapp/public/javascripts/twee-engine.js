@@ -157,7 +157,7 @@ class TweeEngine {
       .replace(/\bis\b/g, '==')
       .replace(/\bor\b/g, '||')
       .replace(/\band\b/g, '&&')
-      .replace(/\b[$_a-zA-Z]\w*\b/g, (v) => {
+      .replace(/[$_a-zA-Z]\w*/g, (v) => {
         if (keywords.indexOf(v) >= 0) return v
         else return this.variables[v]
       })
