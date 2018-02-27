@@ -22,6 +22,7 @@ class TweeEngine {
     this.currentLine = ""
     this.nestedBlocks = []
     this.nestedStatementIndices = []
+    this.nestedCallbacks = []
     this.statementIndex = 0
     this.awaitingChoice = false
 
@@ -88,29 +89,41 @@ class TweeEngine {
         this.gotoPassage(stmt.name)
         break
 
+        case 'delay':
+        const delayExpr = stmt.expression
+        this.pushBlock(stmt.statements, () => {
+          const text = this.currentLine
+          this.currentLine = ""
+          return { type: 'delay', delay: delayExpr, text: text }
+        })
+        break
+
         case 'choice':
         result = { type: 'choice', choices: stmt.choices }
         this.awaitingChoice = true
         break
 
         case 'if':
-        var clause = null  // TODO: check clauses
-        if (clause) {
-          this.nestedBlocks.push(this.currentBlock)
-          this.nestedStatementIndices.push(this.statementIndex)
-          this.currentBlock = clause.statements
-          this.statementIndex = 0
+        for (const clause of stmt.clauses) {
+          // no condition means else clause
+          const ok = !clause.condition || this.interpretExpression(clause.condition)
+          if (ok) {
+            this.pushBlock(clause.statements)
+            break
+          }
         }
         break
 
         default:
         throw new Error('Unknown statement type: ' + stmt._type)
       }
-    } else if (this.nestedStatementIndices.length > 0) {
-      // finished previous block.  pop nested statement and keep going
-      this.currentBlock = this.nestedBlocks.pop()
-      this.statementIndex = this.nestedStatementIndices.pop()
-      return interpretNextStatement()
+    } else if (this.isNestedBlock()) {
+      // finished previous block.  pop nested statement.
+      // if popped statement has a callback, call it and it may also produce a result.
+      const popFn = this.popBlock()
+      if (popFn) {
+        result = popFn()
+      }
     } else {
       throw new Error('No next statement')
     }
@@ -118,7 +131,42 @@ class TweeEngine {
     return result
   }
 
+
+  isNestedBlock() {
+    return this.nestedStatementIndices.length > 0
+  }
+
+  pushBlock(block, popFn) {
+      this.nestedBlocks.push(this.currentBlock)
+      this.nestedStatementIndices.push(this.statementIndex)
+      this.nestedCallbacks.push(popFn || null)
+      this.currentBlock = block
+      this.statementIndex = 0
+  }
+
+  popBlock() {
+      this.currentBlock = this.nestedBlocks.pop()
+      this.statementIndex = this.nestedStatementIndices.pop()
+      return this.nestedCallbacks.pop()
+  }
+
   interpretExpression(expr) {
-    return expr
+    const keywords = ['true', 'false', 'null']
+
+    const modifiedExpr = "'use strict'; " + expr
+      .replace(/\bis\b/g, '==')
+      .replace(/\bor\b/g, '||')
+      .replace(/\band\b/g, '&&')
+      .replace(/\b[$_a-zA-Z]\w*\b/g, (v) => {
+        if (keywords.indexOf(v) >= 0) return v
+        else return this.variables[v]
+      })
+
+    try {
+      return eval(modifiedExpr)
+    } catch (e) {
+      console.log(modifiedExpr)
+      throw new Error("Cannot evaluate expression: " + expr)
+    }
   }
 }
