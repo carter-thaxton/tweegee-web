@@ -155,7 +155,7 @@ $(function() {
   }
 
   function showDelay(text, delay) {
-    div('delay').text(delay + " - " + text).appendTo('#messages')
+    div('delay').text(text + "    (" + delay + ")").appendTo('#messages')
   }
 
   function showChoice(choices) {

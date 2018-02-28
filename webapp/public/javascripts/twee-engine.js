@@ -136,11 +136,11 @@ class TweeEngine {
       break
 
       case 'delay':
-      const delayExpr = stmt.expression
+      const delay = this.interpretExpression(stmt.expression)
       this.pushBlock(stmt.statements, () => {
         const text = this.currentLine
         this.currentLine = ""
-        return { action: 'delay', delay: delayExpr, text: text }
+        return { action: 'delay', delay: delay, text: text }
       })
       break
 
