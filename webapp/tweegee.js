@@ -6,8 +6,10 @@ var binDir = path.join(__dirname, '../bin')
 var twineDir = path.join(__dirname, '../twine-files')
 
 var BUILTINS = {
-  'Lifeline': twineDir + '/Lifeline.tw2',
-  'LLHTI': twineDir + '/LLHTI.tw2',
+  'Lifeline':   twineDir + '/Lifeline.tw2',
+  'LLHTI':      twineDir + '/LLHTI.tw2',
+  'Playlist':   twineDir + '/Playlist.tw2',
+  'Test':       twineDir + '/Test.tw2',
 }
 
 function processRequest(req, cb) {
