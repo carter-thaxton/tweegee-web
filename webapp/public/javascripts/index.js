@@ -115,21 +115,24 @@ $(function() {
   }
 
 
-  function nextAction() {
-    var action = twee_engine.getNextAction()
-    showAction(action)
+  function nextAction(delay) {
+    delay = delay || 0
+    setTimeout(function() {
+      var action = twee_engine.getNextAction()
+      showAction(action)
+    }, delay)
   }
 
   function showAction(action) {
     switch (action.action) {
       case 'message':
         showMessage(action.text)
-        nextAction()
+        nextAction(50)
         break
 
       case 'delay':
         showDelay(action.text, action.delay)
-        nextAction()
+        nextAction(500)
         break
 
       case 'choice':
@@ -160,13 +163,17 @@ $(function() {
     choices.forEach(function(ch) {
       $('<button/>', {
         text: ch.title || ch.name,
-        click: function() { makeChoice(ch.name) },
+        click: function() { makeChoice(ch.name, this) },
       }).appendTo(d)
     })
     d.appendTo('#messages')
   }
 
-  function makeChoice(choice) {
+  function makeChoice(choice, button) {
+    if (button) {
+      $(button).addClass('chosen')
+    }
+    $('.choice button').prop('disabled', true)  // disable all choices
     twee_engine.gotoPassage(choice)
     nextAction()
   }

@@ -51,6 +51,10 @@ a {
   margin: 2px;
 }
 
+.chosen {
+  background-color: #A0FFA0;
+}
+
 .end {
   border: solid red;
   padding: 5px;
