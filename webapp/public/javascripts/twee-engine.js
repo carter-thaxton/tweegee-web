@@ -9,6 +9,7 @@ class TweeEngine {
       this.passagesByName[passage.name] = passage
     })
 
+    this.defaultDelayText = "[Taylor is busy]"
     this.resetStory()
   }
 
@@ -138,7 +139,7 @@ class TweeEngine {
       case 'delay':
       const delay = this.interpretExpression(stmt.expression)
       this.pushBlock(stmt.statements, () => {
-        const text = this.currentLine
+        const text = this.currentLine || this.defaultDelayText
         this.currentLine = ""
         return { action: 'delay', delay: delay, text: text }
       })
