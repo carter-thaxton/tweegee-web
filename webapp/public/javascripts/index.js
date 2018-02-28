@@ -21,7 +21,6 @@ $(function() {
     var file = $('#file').val().trim()
     if (file) {
       var formData = new FormData($(this)[0])
-      console.log("Sending file...")
       uploading = true
       update_upload_visibility()
 
@@ -45,14 +44,14 @@ $(function() {
     return false
   })
 
+  $('#start').click(start)
+
   function handle_error(error) {
     if (error.responseJSON) {
       // tweegee response will be 400 if there are errors, but still continue to display
       show_result(error.responseJSON)
     } else {
       var err_text = JSON.stringify(error, null, 2)
-      console.log("Received unexpected error")
-      console.log(err_text)
       show_error("Unexpected error: " + err_text)
     }
   }
@@ -80,15 +79,27 @@ $(function() {
     $('#author').text(story.author ? 'by ' + story.author : '')
     $('#passage_count').text(story.statistics.passageCount)
     $('#word_count').text(story.statistics.wordCount)
+    $('#messages').empty()
     $('#story').show()
 
     window.twee_engine = new TweeEngine(story)
   }
 
+  function div(a1, a2) {
+    var opts = {}
+    var t1 = $.type(a1)
+    var t2 = $.type(a2)
+    if (t1 === 'object') { opts = a1 }
+    else if (t2 === 'object') { opts = a2 }
+    if (t1 === 'string') { opts['class'] = a1 }
+    else if (t2 === 'string') { opts['class'] = a2 }
+    return $('<div/>', opts)
+  }
+
   function show_error(msg, err) {
-    var div = $('<div class="error"/>')
+    var d = div('error')
     function addLine(line) {
-      div.append($('<div/>').text(line))
+      d.append(div().text(line))
     }
 
     addLine(msg)
@@ -96,7 +107,89 @@ $(function() {
       addLine("Line " + err.passageLineNumber + " in passage: " + err.passage)
       addLine(err.line)
     }
-    $('#errors').append(div)
+    $('#errors').append(d)
+  }
+
+  function scrollToBottom() {
+    document.body.scrollIntoView(false)
+  }
+
+
+  function nextAction() {
+    var action = twee_engine.getNextAction()
+    showAction(action)
+  }
+
+  function showAction(action) {
+    switch (action.action) {
+      case 'message':
+        showMessage(action.text)
+        nextAction()
+        break
+
+      case 'delay':
+        showDelay(action.text, action.delay)
+        nextAction()
+        break
+
+      case 'choice':
+        showChoice(action.choices)
+        break
+
+      case 'end':
+        showEnd()
+        break
+
+      default:
+        throw new Error('Unknown action: ' + action.action)
+    }
+
+    scrollToBottom()
+  }
+
+  function showMessage(text) {
+    div('message').text(text).appendTo('#messages')
+  }
+
+  function showDelay(text, delay) {
+    div('delay').text(delay + " - " + text).appendTo('#messages')
+  }
+
+  function showChoice(choices) {
+    var d = div('choice')
+    choices.forEach(function(ch) {
+      $('<button/>', {
+        text: ch.title || ch.name,
+        click: function() { makeChoice(ch.name) },
+      }).appendTo(d)
+    })
+    d.appendTo('#messages')
+  }
+
+  function makeChoice(choice) {
+    twee_engine.gotoPassage(choice)
+    nextAction()
+  }
+
+  function showEnd() {
+    div('end').text("THE END ")
+      .append($('<button/>', {
+        text: 'Reset story',
+        click: reset
+      }))
+      .appendTo('#messages')
+  }
+
+  function start() {
+    if (!twee_engine) return
+    reset()
+    nextAction()
+  }
+
+  function reset() {
+    $('#messages').empty()
+    twee_engine.resetStory()
+    scrollToBottom()
   }
 
 })

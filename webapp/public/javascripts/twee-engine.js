@@ -44,13 +44,17 @@ class TweeEngine {
   }
 
   // returns one of:
-  // { type: 'message', text: 'A line of text' }
-  // { type: 'choice', choices: [{title: 'Choose this', name: 'choice1'}, {title: 'Or this', name: 'choice2'}] }
-  // { type: 'delay', seconds: 3600, text: 'Taylor is busy' }
+  // { action: 'message', text: 'A line of text' }
+  // { action: 'choice', choices: [{title: 'Choose this', name: 'choice1'}, {title: 'Or this', name: 'choice2'}] }
+  // { action: 'delay', delay: '5m', text: 'Taylor is busy' }
+  // { action: 'end' }
   getNextAction() {
     while (true) {
       const result = this.interpretNextStatement()
-      if (result) return result
+      if (result) {
+        console.log(result)
+        return result
+      }
     }
   }
 
@@ -76,7 +80,8 @@ class TweeEngine {
         return null
       }
     } else {
-      throw new Error('No next statement')
+      // reached the end
+      return { action: 'end' }
     }
   }
 
@@ -108,7 +113,7 @@ class TweeEngine {
       case 'newline':
       const message = this.currentLine.trim()
       if (message) {
-        result = { type: 'message', text: message }
+        result = { action: 'message', text: message }
       }
       this.currentLine = ""
       break
@@ -135,12 +140,12 @@ class TweeEngine {
       this.pushBlock(stmt.statements, () => {
         const text = this.currentLine
         this.currentLine = ""
-        return { type: 'delay', delay: delayExpr, text: text }
+        return { action: 'delay', delay: delayExpr, text: text }
       })
       break
 
       case 'choice':
-      result = { type: 'choice', choices: stmt.choices }
+      result = { action: 'choice', choices: stmt.choices }
       this.awaitingChoice = true
       break
 
@@ -181,13 +186,19 @@ class TweeEngine {
 
     const modifiedExpr = "'use strict'; " + expr
       .replace(/\bis\b/g, '==')
+      .replace(/\bne\b/g, '!=')
+      .replace(/\bisnt\b/g, '!=')
       .replace(/\bor\b/g, '||')
       .replace(/\band\b/g, '&&')
+      .replace(/\blt\b/g, '<')
+      .replace(/\blte\b/g, '<=')
+      .replace(/\bgt\b/g, '>')
+      .replace(/\bgte\b/g, '>=')
       .replace(/("[^"]*"|'[^']*')|([$_a-zA-Z]\w*)/g, (match, quoted, variable) => {
         if (quoted) { return quoted }
         else if (variable) {
           if (keywords.indexOf(variable) >= 0) return variable
-          return this.variables[variable]
+          return JSON.stringify(this.variables[variable])
         } else {
           throw new Error('Error while replacing variables in expression: ' + expr)
         }

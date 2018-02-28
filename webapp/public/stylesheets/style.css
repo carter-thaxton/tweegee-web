@@ -27,3 +27,32 @@ a {
 #author {
   margin-top: 3px;
 }
+
+.message {
+  border: solid gray;
+  padding: 5px;
+  margin: 5px;
+}
+
+.delay {
+  border: solid blue;
+  padding: 5px;
+  margin: 5px;
+  color: green;
+}
+
+.choice {
+  border: solid orange;
+  padding: 5px;
+  margin: 5px;
+}
+
+.choice button {
+  margin: 2px;
+}
+
+.end {
+  border: solid red;
+  padding: 5px;
+  margin: 5px;
+}
