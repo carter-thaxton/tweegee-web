@@ -1,50 +1,70 @@
 $(function() {
-  var uploading = false
-
-  function update_upload_visibility() {
-    var disabled
-    if (uploading) {
-      disabled = true
-    } else {
-      var file = $('#file').val().trim()
-      disabled = !file
-    }
-    $('#submit').prop('disabled', disabled)
-  }
-
-  $('#file').change(update_upload_visibility)
-  update_upload_visibility()
+  var fetching_game = false
 
   // Setup form upload
   $('#upload_form').submit(function(evt) {
     evt.preventDefault()
-    var file = $('#file').val().trim()
-    if (file) {
+    if ($('#file').val().trim()) {
       var formData = new FormData($(this)[0])
-      uploading = true
-      update_upload_visibility()
-
-      $('#errors').empty()
-      $('#story').hide()
-
-      $.ajax({
-        url: 'tweegee',
-        type: 'POST',
-        data: formData,
-        async: true,
-        cache: false,
-        contentType: false,
-        enctype: 'multipart/form-data',
-        processData: false,
-        success: show_result,
-        error: handle_error,
-        complete: function() { uploading = false; update_upload_visibility() },
-      })
+      upload_file(formData)
     }
     return false
   })
 
+  // Setup builtins
+  $('.builtin').click(function() {
+    load_builtin($(this).text())
+  })
+
   $('#start').click(start)
+
+  $('#file').change(update_buttons)
+  update_buttons()
+
+
+  function update_buttons() {
+    if (fetching_game) {
+      $('#submit').prop('disabled', true)
+      $('.builtin').prop('disabled', true)
+    } else {
+      var file = $('#file').val().trim()
+      $('#submit').prop('disabled', !file)
+      $('.builtin').prop('disabled', false)
+    }
+  }
+
+  function upload_file(formData) {
+    post_tweegee({enctype: 'multipart/form-data', data: formData})
+  }
+
+  function load_builtin(builtin_name) {
+    post_tweegee({contentType: 'application/json', data: JSON.stringify({ builtin: builtin_name })})
+  }
+
+  function post_tweegee(post_opts) {
+    if (fetching_game) return
+    fetching_game = true
+    update_buttons()
+
+    $('#errors').empty()
+    $('#story').hide()
+
+    var opts = {
+      url: 'tweegee',
+      type: 'POST',
+      dataType: 'json',
+      async: true,
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: show_result,
+      error: handle_error,
+      complete: function() { fetching_game = false; update_buttons() },
+    }
+
+    $.extend(opts, post_opts)
+    $.ajax(opts)
+  }
 
   function handle_error(error) {
     if (error.responseJSON) {

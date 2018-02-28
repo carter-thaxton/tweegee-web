@@ -3,27 +3,49 @@ var path = require('path')
 var exec = require('child_process').exec
 
 var binDir = path.join(__dirname, '../bin')
+var twineDir = path.join(__dirname, '../twine-files')
 
-function processFile(file, opts, cb) {
-  convertToTwee(file, function(err, data) {
-    if (err) return cb(err, data)
-    runTweegee(data.tweeFile, function(err, stdout) {
-      if (err) {
-        data.ok = false
-        data.exitCode = err.code
-      } else {
-        data.ok = true
-        data.exitCode = 0
-      }
-      try {
-        data.result = JSON.parse(stdout)
-      } catch (err) {
-        data.stdout = stdout
-      }
-      cb(null, data)
-    })
-  })
+var BUILTINS = {
+  'Lifeline': twineDir + '/Lifeline.tw2',
+  'LLHTI': twineDir + '/LLHTI.tw2',
 }
+
+function processRequest(req, cb) {
+  var builtin = req.params.builtin || req.body.builtin
+  if (builtin) {
+    var builtinFile = BUILTINS[builtin]
+    if (builtinFile) {
+      runTweegee(builtinFile, handleTweegeeResult)
+    } else {
+      return cb(new Error('Could not find builtin: ' + builtin))
+    }
+  } else if (req.file) {
+    convertToTwee(req.file, function(err, conversion) {
+      if (err) return cb(err, conversion)
+      runTweegee(conversion.tweeFile, handleTweegeeResult)
+    })
+  } else {
+    cb(new Error('Either upload a file or request a builtin'))
+  }
+
+  function handleTweegeeResult(err, stdout) {
+    var data = {}
+    if (err) {
+      data.ok = false
+      data.exitCode = err.code
+    } else {
+      data.ok = true
+      data.exitCode = 0
+    }
+    try {
+      data.result = JSON.parse(stdout)
+    } catch (err) {
+      data.stdout = stdout
+    }
+    cb(null, data)
+  }
+}
+
 
 function convertToTwee(file, cb) {
   var inputFile = file.path
@@ -68,4 +90,4 @@ function runTweegee(tweeFile, cb) {
   exec(cmd, {maxBuffer: 10 * 1024 * 1024}, cb)
 }
 
-module.exports = processFile
+module.exports = processRequest

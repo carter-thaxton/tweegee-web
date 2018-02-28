@@ -13,8 +13,12 @@ tweegee-clean:
 webapp:
 	cd webapp && npm install
 
-webapp-clean:
+webapp-clean:  clean-uploads
 	rm -rf webapp/node_modules
+
+
+clean-uploads:
+	rm -f webapp/uploads/*
 
 
 update-tweegee:		tweegee

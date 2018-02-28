@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 })
 
 router.post('/tweegee', function(req, res, next) {
-  tweegee(req.file, req.params, function(err, data) {
+  tweegee(req, function(err, data) {
     if (err) {
       data = data || {}
       data.ok = false
