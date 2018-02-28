@@ -185,11 +185,12 @@ class TweeEngine {
     const keywords = ['true', 'false', 'null']
 
     const modifiedExpr = "'use strict'; " + expr
-      .replace(/\bis\b/g, '==')
-      .replace(/\bne\b/g, '!=')
-      .replace(/\bisnt\b/g, '!=')
       .replace(/\bor\b/g, '||')
       .replace(/\band\b/g, '&&')
+      .replace(/\bis\b/g, '==')
+      .replace(/\beq\b/g, '==')
+      .replace(/\bne\b/g, '!=')
+      .replace(/\bisnt\b/g, '!=')
       .replace(/\blt\b/g, '<')
       .replace(/\blte\b/g, '<=')
       .replace(/\bgt\b/g, '>')
