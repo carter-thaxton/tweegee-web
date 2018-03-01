@@ -88,7 +88,7 @@ function convertToTwee(file, cb) {
 
 // given a twee file, return stdout of executing tweegee
 function runTweegee(tweeFile, cb) {
-  var cmd = binDir + '/tweegee ' + tweeFile
+  const cmd = `${binDir}/tweegee --json '${tweeFile}'`
   exec(cmd, {maxBuffer: 10 * 1024 * 1024}, cb)
 }
 
