@@ -50,13 +50,15 @@ open:
 	open http://ec2-18-217-244-234.us-east-2.compute.amazonaws.com
 
 
-deploy:		deploy-dev deploy-web
+deploy:
+	ssh tweegee '. ~/.nvm/nvm.sh && cd tweegee-web && make pull all restart'
 
 deploy-dev:
 	ssh tweegee-dev '. ~/.nvm/nvm.sh && cd tweegee-web && make pull all restart'
 
-deploy-web:
-	ssh tweegee '. ~/.nvm/nvm.sh && cd tweegee-web && make pull all restart'
+copy-twine-files:
+	scp twine-files/*.tw2 tweegee:tweegee-web/twine-files/
+
 
 
 .PHONY: tweegee webapp
