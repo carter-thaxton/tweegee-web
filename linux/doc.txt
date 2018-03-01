@@ -8,6 +8,9 @@ VirtualBox
 Follow VirtualBox instructions from:
 https://theswiftdev.com/2017/11/30/how-to-run-swift-on-linux/
 
+Also be sure to install the dependencies for swift:
+sudo apt-get install clang libicu-dev libpython2.7 libcurl3
+
 
 RVM & Ruby
 ----------
