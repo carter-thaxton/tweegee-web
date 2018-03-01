@@ -15,10 +15,16 @@ class TweeEngine {
 
   resetStory() {
     this.variables = {}
+    this.passagesVisited = {}
     this.gotoPassage(this.story.start)
   }
 
   gotoPassage(name) {
+    // here's how we'll handle dynamic passages for now
+    if (name.startsWith('$')) {
+      name = this.interpretExpression(name)
+    }
+
     this.currentPassageName = name
     this.currentLine = ""
     this.nestedBlocks = []
@@ -30,6 +36,8 @@ class TweeEngine {
     const passage = this.passagesByName[name]
     if (passage) {
       this.currentBlock = passage.statements
+      const visitCount = this.passagesVisited[name] || 0
+      this.passagesVisited[name] = visitCount + 1
     } else {
       this.currentBlock = []
       throw new Error('No passage named: ' + name)
@@ -200,4 +208,27 @@ class TweeEngine {
       throw new Error("Cannot evaluate expression: " + expr)
     }
   }
+
+  visited(passage) {
+    passage = passage || this.currentPassageName
+    return this.passagesVisited[passage] || 0
+  }
+
+  either(...args) {
+    // this lets it be called with an array
+    if (args.length == 1 && Array.isArray(args[0]))
+      args = args[0]
+
+    const index = Math.floor(Math.random() * args.length)
+    return args[index]
+  }
+}
+
+// This is not the best way to do this, but for now, just create global functions that bridge for use in expressions via eval
+function visited(passage) {
+  return window.twee_engine ? window.twee_engine.visited(passage) : 0
+}
+
+function either(...args) {
+  return window.twee_engine ? window.twee_engine.either(...args) : null
 }
