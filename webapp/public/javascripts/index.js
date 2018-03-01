@@ -182,8 +182,8 @@ $(function() {
     var d = div('choice')
     choices.forEach(function(ch) {
       $('<button/>', {
-        text: ch.title || ch.name,
-        click: function() { makeChoice(ch.name, this) },
+        text: ch.title || ch.passage,
+        click: function() { makeChoice(ch.passage, this) },
       }).appendTo(d)
     })
     d.appendTo('#messages')

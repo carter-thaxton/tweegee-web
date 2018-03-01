@@ -46,7 +46,7 @@ class TweeEngine {
 
   // returns one of:
   // { action: 'message', text: 'A line of text' }
-  // { action: 'choice', choices: [{title: 'Choose this', name: 'choice1'}, {title: 'Or this', name: 'choice2'}] }
+  // { action: 'choice', choices: [{title: 'Choose this', passage: 'choice1'}, {title: 'Or this', passage: 'choice2'}] }
   // { action: 'delay', delay: '5m', text: 'Taylor is busy' }
   // { action: 'end' }
   getNextAction() {
@@ -133,7 +133,7 @@ class TweeEngine {
 
       case 'link':
       if (this.currentLine) throw new Error('Did not emit newline before link')
-      this.gotoPassage(stmt.name)
+      this.gotoPassage(stmt.passage)
       break
 
       case 'delay':
@@ -151,7 +151,7 @@ class TweeEngine {
       break
 
       case 'include':
-      const includePassageName = this.interpretExpression(stmt.passageExpr)
+      const includePassageName = stmt.passage
       const includePassage = this.passagesByName[includePassageName]
       const returnToPassage = this.currentPassageName
       if (includePassage) {
