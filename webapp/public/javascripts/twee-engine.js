@@ -183,8 +183,6 @@ class TweeEngine {
   }
 
   interpretExpression(expr) {
-    const keywords = ['true', 'false', 'null']
-
     const modifiedExpr = "'use strict'; " + expr
       .replace(/\bor\b/g, '||')
       .replace(/\band\b/g, '&&')
@@ -196,10 +194,9 @@ class TweeEngine {
       .replace(/\blte\b/g, '<=')
       .replace(/\bgt\b/g, '>')
       .replace(/\bgte\b/g, '>=')
-      .replace(/("[^"]*"|'[^']*')|([$_a-zA-Z]\w*)/g, (match, quoted, variable) => {
+      .replace(/$("[^"]*"|'[^']*')|(\$\w+)/g, (match, quoted, variable) => {  // find unquoted uses of $variables
         if (quoted) { return quoted }
         else if (variable) {
-          if (keywords.indexOf(variable) >= 0) return variable
           return JSON.stringify(this.variables[variable])
         } else {
           throw new Error('Error while replacing variables in expression: ' + expr)
