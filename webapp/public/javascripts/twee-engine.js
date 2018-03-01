@@ -184,11 +184,12 @@ class TweeEngine {
 
   interpretExpression(expr) {
     const modifiedExpr = "'use strict'; " + expr
+      .replace(/\bnot\b/g, '!')
       .replace(/\bor\b/g, '||')
       .replace(/\band\b/g, '&&')
       .replace(/\bis\b/g, '==')
       .replace(/\beq\b/g, '==')
-      .replace(/\bne\b/g, '!=')
+      .replace(/\bneq\b/g, '!=')
       .replace(/\bisnt\b/g, '!=')
       .replace(/\blt\b/g, '<')
       .replace(/\blte\b/g, '<=')
