@@ -184,17 +184,6 @@ class TweeEngine {
 
   interpretExpression(expr) {
     const modifiedExpr = "'use strict'; " + expr
-      .replace(/\bnot\b/g, '!')
-      .replace(/\bor\b/g, '||')
-      .replace(/\band\b/g, '&&')
-      .replace(/\bis\b/g, '==')
-      .replace(/\beq\b/g, '==')
-      .replace(/\bneq\b/g, '!=')
-      .replace(/\bisnt\b/g, '!=')
-      .replace(/\blt\b/g, '<')
-      .replace(/\blte\b/g, '<=')
-      .replace(/\bgt\b/g, '>')
-      .replace(/\bgte\b/g, '>=')
       .replace(/$("[^"]*"|'[^']*')|(\$\w+)/g, (match, quoted, variable) => {  // find unquoted uses of $variables
         if (quoted) { return quoted }
         else if (variable) {
