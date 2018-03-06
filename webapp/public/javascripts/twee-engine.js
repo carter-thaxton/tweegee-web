@@ -20,11 +20,6 @@ class TweeEngine {
   }
 
   gotoPassage(name) {
-    // here's how we'll handle dynamic passages for now
-    if (name.startsWith('$')) {
-      name = this.interpretExpression(name)
-    }
-
     this.currentPassageName = name
     this.currentLine = ""
     this.nestedBlocks = []
@@ -118,6 +113,19 @@ class TweeEngine {
       return this.nestedCallbacks.pop()
   }
 
+  includePassage(name) {
+    const passage = this.passagesByName[name]
+    if (passage) {
+      const returnToPassage = this.currentPassageName
+      this.currentPassageName = name
+      this.pushBlock(passage.statements, () => {
+        this.currentPassageName = returnToPassage
+      })
+    } else {
+        throw new Error('No passage named: ' + name)
+    }
+  }
+
   interpretStatement(stmt) {
     // Print out for now
     console.log(stmt)
@@ -146,7 +154,8 @@ class TweeEngine {
 
       case 'link':
       if (this.currentLine) throw new Error('Did not emit newline before link')
-      this.gotoPassage(stmt.passage)
+      const passage = stmt.passage || this.interpretExpression(stmt.expression)
+      this.gotoPassage(passage)
       break
 
       case 'delay':
@@ -163,17 +172,8 @@ class TweeEngine {
       break
 
       case 'include':
-      const includePassageName = stmt.passage
-      const includePassage = this.passagesByName[includePassageName]
-      const returnToPassage = this.currentPassageName
-      if (includePassage) {
-        this.currentPassageName = includePassageName
-        this.pushBlock(includePassage.statements, () => {
-          this.currentPassageName = returnToPassage
-        })
-      } else {
-        throw new Error('Could not include passage named: ' + includePassageName)
-      }
+      const incPassage = stmt.passage || this.interpretExpression(stmt.expression)
+      this.includePassage(incPassage)
       break
 
       case 'if':
