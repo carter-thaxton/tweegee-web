@@ -55,7 +55,7 @@ class TweeEngine {
   // returns one of:
   // { action: 'message', text: 'A line of text' }
   // { action: 'choice', choices: [{title: 'Choose this', passage: 'choice1'}, {title: 'Or this', passage: 'choice2'}] }
-  // { action: 'delay', delay: '5m', text: 'Taylor is busy' }
+  // { action: 'delay', delay: '5m', seconds: 300, text: 'Taylor is busy' }
   // { action: 'end' }
   getNextAction() {
     while (true) {
@@ -145,11 +145,10 @@ class TweeEngine {
       break
 
       case 'delay':
-      const delay = this.interpretExpression(stmt.expression)
       this.pushBlock(stmt.statements, () => {
         const text = this.currentLine || this.defaultDelayText
         this.currentLine = ""
-        return { action: 'delay', delay: delay, text: text }
+        return { action: 'delay', delay: stmt.delay, seconds: stmt.seconds, text: text }
       })
       break
 
@@ -195,7 +194,11 @@ class TweeEngine {
       .replace(/$("[^"]*"|'[^']*')|(\$\w+)/g, (match, quoted, variable) => {  // find unquoted uses of $variables
         if (quoted) { return quoted }
         else if (variable) {
-          return JSON.stringify(this.variables[variable])
+          if (variable in this.variables) {
+            return JSON.stringify(this.variables[variable])
+          } else {
+            throw new Error('Variable ' + variable + ' is not defined')
+          }
         } else {
           throw new Error('Error while replacing variables in expression: ' + expr)
         }
