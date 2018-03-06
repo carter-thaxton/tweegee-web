@@ -56,14 +56,19 @@ class TweeEngine {
   // { action: 'message', text: 'A line of text' }
   // { action: 'choice', choices: [{title: 'Choose this', passage: 'choice1'}, {title: 'Or this', passage: 'choice2'}] }
   // { action: 'delay', delay: '5m', seconds: 300, text: 'Taylor is busy' }
+  // { action: 'error', error: 'Undefined variable: $foo' }
   // { action: 'end' }
   getNextAction() {
-    while (true) {
-      const result = this.interpretNextStatement()
-      if (result) {
-        console.log(result)
-        return result
+    try {
+      while (true) {
+        const result = this.interpretNextStatement()
+        if (result) {
+          console.log(result)
+          return result
+        }
       }
+    } catch (err) {
+      return { action: 'error', error: err.message }
     }
   }
 

@@ -159,6 +159,10 @@ $(function() {
         showChoice(action.choices)
         break
 
+      case 'error':
+        showError(action.error)
+        break
+
       case 'end':
         showEnd()
         break
@@ -204,6 +208,11 @@ $(function() {
         text: 'Reset story',
         click: reset
       }))
+      .appendTo('#messages')
+  }
+
+  function showError(error) {
+    div('error').text("Error occurred: " + error)
       .appendTo('#messages')
   }
 
