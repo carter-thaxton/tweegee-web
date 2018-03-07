@@ -159,6 +159,7 @@ class TweeEngine {
       break
 
       case 'delay':
+      if (this.currentLine) throw new Error('Did not emit newline before delay')
       this.pushBlock(stmt.statements, () => {
         const text = this.currentLine || this.defaultDelayText
         this.currentLine = ""
