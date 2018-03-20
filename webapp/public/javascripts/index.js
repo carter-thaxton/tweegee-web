@@ -198,7 +198,7 @@ $(function() {
       $(button).addClass('chosen')
     }
     $('.choice button').prop('disabled', true)  // disable all choices
-    twee_engine.gotoPassage(choice)
+    twee_engine.makeChoice(choice)
     nextAction()
   }
 

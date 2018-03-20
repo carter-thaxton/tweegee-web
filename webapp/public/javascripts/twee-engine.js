@@ -19,14 +19,36 @@ class TweeEngine {
     this.gotoPassage(this.story.start)
   }
 
+  makeChoice(choice) {
+    if (!this.currentChoices) {
+        throw new Error("Not awaiting a choice")
+    }
+
+    if (Number.isInteger(choice)) {
+      var ch = this.currentChoices[choice]
+      if (ch) {
+        this.gotoPassage(ch.passage)
+      } else {
+        throw new Error("No choice available with index: " + choice)
+      }
+    } else {
+      var ch = this.currentChoices.find(c => c.passage == choice)
+      if (ch) {
+        this.gotoPassage(ch.passage)
+      } else {
+        throw new Error("No choice available with passage named: " + choice)
+      }
+    }
+  }
+
   gotoPassage(name) {
     this.currentPassageName = name
     this.currentLine = ""
+    this.currentChoices = null
     this.nestedBlocks = []
     this.nestedStatementIndices = []
     this.nestedCallbacks = []
     this.statementIndex = 0
-    this.awaitingChoice = false
 
     const passage = this.passagesByName[name]
     if (passage) {
@@ -54,6 +76,10 @@ class TweeEngine {
   // { action: 'error', error: 'Undefined variable: $foo' }
   // { action: 'end' }
   getNextAction() {
+    if (this.currentChoices) {
+      throw new Error('Awaiting a choice.  Must choose with makeChoice')
+    }
+
     try {
       while (true) {
         const result = this.interpretNextStatement()
@@ -69,10 +95,6 @@ class TweeEngine {
 
   // return an action, or null to continue
   interpretNextStatement() {
-    if (this.awaitingChoice) {
-      throw new Error('Awaiting a choice.  Must make choice with gotoPassage')
-    }
-
     const stmt = this.nextStatement()
     if (stmt) {
       // advance index within block
@@ -155,7 +177,11 @@ class TweeEngine {
       case 'link':
       if (this.currentLine) throw new Error('Did not emit newline before link')
       const passage = stmt.passage || this.interpretExpression(stmt.expression)
-      this.gotoPassage(passage)
+      if (this.currentChoices) {
+        this.currentChoices.push(stmt)
+      } else {
+        this.gotoPassage(passage)
+      }
       break
 
       case 'delay':
@@ -168,8 +194,12 @@ class TweeEngine {
       break
 
       case 'choice':
-      result = { action: 'choice', choices: stmt.choices }
-      this.awaitingChoice = true
+      if (this.currentLine) throw new Error('Did not emit newline before choice')
+      this.currentChoices = []
+      this.pushBlock(stmt.statements, () => {
+        this.currentLine = ""
+        return { action: 'choice', choices: this.currentChoices }
+      })
       break
 
       case 'include':
