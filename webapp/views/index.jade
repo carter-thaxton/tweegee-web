@@ -39,4 +39,17 @@ block content
 
     #messages
 
-  #bottom
+  #debugger.hidden
+    hr
+    a.show(href="#") show debugger
+    #debugger_contents.hidden
+      #measure_height.row
+        .column.code
+          h4 Code
+          #code
+
+        .column.variables
+          h4 Variables
+          #variables
+
+    br

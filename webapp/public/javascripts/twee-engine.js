@@ -16,6 +16,8 @@ class TweeEngine {
   resetStory() {
     this.variables = {}
     this.passagesVisited = {}
+    this.previousStatement = null
+    this.previousPassageName = null
     this.gotoPassage(this.story.start)
   }
 
@@ -65,14 +67,19 @@ class TweeEngine {
     return this.passagesByName[this.currentPassageName]
   }
 
+  previousPassage() {
+    return this.passagesByName[this.previousPassageName]
+  }
+
   nextStatement() {
     return this.currentBlock[this.statementIndex]
   }
 
   // returns one of:
   // { action: 'message', text: 'A line of text' }
-  // { action: 'choice', choices: [{title: 'Choose this', passage: 'choice1'}, {title: 'Or this', passage: 'choice2'}] }
+  // { action: 'choice', choices: [{text: 'Choose this', passage: 'choice1'}, {text: 'Or this', passage: 'choice2'}] }
   // { action: 'delay', delay: '5m', seconds: 300, text: 'Taylor is busy' }
+  // { action: 'prompt', text: 'Ready?' }
   // { action: 'error', error: 'Undefined variable: $foo' }
   // { action: 'end' }
   getNextAction() {
@@ -97,6 +104,10 @@ class TweeEngine {
   interpretNextStatement() {
     const stmt = this.nextStatement()
     if (stmt) {
+      // keep track of previous statement and passage, for debugging
+      this.previousStatement = stmt
+      this.previousPassageName = this.currentPassageName
+
       // advance index within block
       // some statements like 'if' or 'link' may alter this further by pushing a block or going to another passage
       this.statementIndex += 1
@@ -178,7 +189,7 @@ class TweeEngine {
       if (this.currentLine) throw new Error('Did not emit newline before link')
       const passage = stmt.passage || this.interpretExpression(stmt.expression)
       if (this.currentChoices) {
-        this.currentChoices.push(stmt)
+        this.currentChoices.push({ passage: stmt.passage, text: stmt.text || stmt.passage })
       } else {
         this.gotoPassage(passage)
       }
@@ -199,6 +210,15 @@ class TweeEngine {
       this.pushBlock(stmt.statements, () => {
         this.currentLine = ""
         return { action: 'choice', choices: this.currentChoices }
+      })
+      break
+
+      case 'prompt':
+      if (this.currentLine) throw new Error('Did not emit newline before prompt')
+      this.pushBlock(stmt.statements, () => {
+        const text = this.currentLine
+        this.currentLine = ""
+        return { action: 'prompt', text: text }
       })
       break
 

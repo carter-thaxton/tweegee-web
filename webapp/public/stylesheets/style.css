@@ -1,10 +1,11 @@
 body {
-  padding: 50px;
+  padding: 5px 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+  color: #003cc1;
+  text-decoration: none;
 }
 
 .hidden {
@@ -60,3 +61,42 @@ a {
   padding: 5px;
   margin: 5px;
 }
+
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#debugger {
+  clear: both;
+}
+
+
+#debugger .show {
+  float: right;
+  height: 0px;
+}
+
+#debugger h4 {
+  margin: 0.5em 0em;
+}
+
+#debugger pre {
+  margin: 0px;
+}
+
+#code .highlighted {
+  background-color: #e0efce;
+}
+
+#variables .highlighted {
+  font-weight: bold;
+}
+
