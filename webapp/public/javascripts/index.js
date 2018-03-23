@@ -142,7 +142,7 @@ function div(a1, a2) {
 }
 
 function scrollToBottom() {
-  requestAnimationFrame(function() { document.body.scrollIntoView(false) })
+//  requestAnimationFrame(function() { document.body.scrollIntoView(false) })
 }
 
 

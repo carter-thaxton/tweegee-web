@@ -65,7 +65,6 @@ a {
 
 .column {
   float: left;
-  width: 50%;
 }
 
 .row:after {
@@ -90,6 +89,17 @@ a {
 
 #debugger pre {
   margin: 0px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+
+.column.code {
+  width: 75%;
+}
+
+.column.variables {
+  width: 25%;
 }
 
 #code .highlighted {
