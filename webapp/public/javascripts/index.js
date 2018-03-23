@@ -157,6 +157,10 @@ function updateScroll() {
   })
 }
 
+function scrollToBottom() {
+  requestAnimationFrame(function() { document.body.scrollIntoView(false) })
+}
+
 
 function nextAction(delay) {
   delay = delay || 0
@@ -291,6 +295,8 @@ function toggleDebugger(makeVisible) {
     debugger_height = 100
     $('#debugger_contents').height('auto')
   }
+
+  scrollToBottom()
 }
 
 function updateDebugger() {
