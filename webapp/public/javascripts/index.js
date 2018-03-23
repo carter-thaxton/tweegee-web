@@ -141,8 +141,20 @@ function div(a1, a2) {
   return $('<div/>', opts)
 }
 
-function scrollToBottom() {
-//  requestAnimationFrame(function() { document.body.scrollIntoView(false) })
+var messages_height = 0
+
+function captureCurrentScroll() {
+  messages_height = $('#messages').height()
+}
+
+function updateScroll() {
+  requestAnimationFrame(function() {
+    var new_messages_height = $('#messages').height()
+    var scroll_offset = new_messages_height - messages_height
+    var top = $(document).scrollTop()
+    $(document).scrollTop(top + scroll_offset)
+    messages_height = new_messages_height
+  })
 }
 
 
@@ -155,6 +167,8 @@ function nextAction(delay) {
 }
 
 function showAction(action) {
+  captureCurrentScroll()
+
   switch (action.action) {
     case 'message':
       showMessage(action.text)
@@ -187,7 +201,7 @@ function showAction(action) {
   }
 
   updateDebugger()
-  scrollToBottom()
+  updateScroll()
 }
 
 function showMessage(text) {
@@ -255,8 +269,8 @@ function reset() {
   $('#messages').empty()
   twee_engine.resetStory()
   debugger_height = 100
+  messages_height = 0
   updateDebugger()
-  scrollToBottom()
 }
 
 
@@ -277,7 +291,6 @@ function toggleDebugger(makeVisible) {
     debugger_height = 100
     $('#debugger_contents').height('auto')
   }
-  scrollToBottom()
 }
 
 function updateDebugger() {
