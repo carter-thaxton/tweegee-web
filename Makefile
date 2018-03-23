@@ -60,5 +60,9 @@ copy-twine-files:
 	scp twine-files/*.tw2 tweegee:tweegee-web/twine-files/
 
 
+remote-clean-uploads:
+	ssh tweegee 'cd tweegee-web && make clean-uploads'
+
+
 
 .PHONY: tweegee webapp
