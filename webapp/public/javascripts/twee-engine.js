@@ -50,7 +50,7 @@ class TweeEngine {
     this.nestedBlocks = []
     this.nestedStatementIndices = []
     this.nestedCallbacks = []
-    this.statementIndex = 0
+    this.statementIndex = -1
 
     const passage = this.passagesByName[name]
     if (passage) {
@@ -76,10 +76,12 @@ class TweeEngine {
   }
 
   // returns one of:
+  // { action: 'passage', passage: 'Start' }
   // { action: 'message', text: 'A line of text' }
   // { action: 'choice', choices: [{text: 'Choose this', passage: 'choice1'}, {text: 'Or this', passage: 'choice2'}] }
   // { action: 'delay', delay: '5m', seconds: 300, text: 'Taylor is busy' }
   // { action: 'prompt', text: 'Ready?' }
+  // { action: 'rewind', passage: 'Start' }
   // { action: 'error', error: 'Undefined variable: $foo' }
   // { action: 'end' }
   getNextAction() {
@@ -102,6 +104,12 @@ class TweeEngine {
 
   // return an action, or null to continue
   interpretNextStatement() {
+    // output passage action on passage boundary
+    if (this.statementIndex < 0) {
+      this.statementIndex = 0
+      return { action: 'passage', passage: this.currentPassageName }
+    }
+
     const stmt = this.nextStatement()
     if (stmt) {
       // keep track of previous statement and passage, for debugging
@@ -147,6 +155,7 @@ class TweeEngine {
   }
 
   includePassage(name) {
+    // Note, do not output a passage action on includePassage, only on gotoPassage
     const passage = this.passagesByName[name]
     if (passage) {
       const returnToPassage = this.currentPassageName
@@ -163,14 +172,13 @@ class TweeEngine {
     // Print out for now
     console.log(stmt)
 
-    var result = null
     switch (stmt._type) {
       case 'newline':
       const message = this.currentLine.trim()
-      if (message) {
-        result = { action: 'message', text: message }
-      }
       this.currentLine = ""
+      if (message) {
+        return { action: 'message', text: message }
+      }
       break
 
       case 'text':
@@ -227,13 +235,18 @@ class TweeEngine {
       this.includePassage(incPassage)
       break
 
+      case 'rewind':
+      const rewindPassage = stmt.passage || this.interpretExpression(stmt.expression)
+      return { action: 'rewind', passage: rewindPassage }
+      break
+
       case 'if':
       for (const clause of stmt.clauses) {
         // no condition means else clause
         const ok = !clause.condition || this.interpretExpression(clause.condition)
         if (ok) {
           this.pushBlock(clause.statements)
-          break
+          break  // out of for loop
         }
       }
       break
@@ -242,7 +255,7 @@ class TweeEngine {
       throw new Error('Unknown statement type: ' + stmt._type)
     }
 
-    return result
+    return null
   }
 
   interpretExpression(expr) {

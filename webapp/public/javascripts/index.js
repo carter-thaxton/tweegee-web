@@ -174,6 +174,11 @@ function showAction(action) {
   captureCurrentScroll()
 
   switch (action.action) {
+    case 'passage':
+      showPassage(action.passage)
+      nextAction(0)
+      break
+
     case 'message':
       showMessage(action.text)
       nextAction(50)
@@ -190,6 +195,10 @@ function showAction(action) {
 
     case 'prompt':
       showPrompt(action.text)
+      break
+
+    case 'rewind':
+      showRewind(action.passage)
       break
 
     case 'error':
@@ -247,6 +256,31 @@ function showPrompt(text) {
     },
   }).appendTo(d)
   d.appendTo('#messages')
+}
+
+function showPassage(passage) {
+  div('passage').data('passage', passage).appendTo('#messages')
+}
+
+function showRewind(passage) {
+  var d = $('#messages div').last()
+  var p = d.data('passage')
+  d.remove()
+
+  if (d.length == 0) {
+    throw new Error('Rewind reached the beginning of the story without finding passage: ' + passage)
+  }
+
+  if (p == passage) {
+    // reached target passage
+    return nextAction(0)
+  } else if (p) {
+    // reached a different passage, continue without delay
+    requestAnimationFrame(function() { showRewind(passage) })
+  } else {
+    // removed one element, recursively handle after delay
+    setTimeout(function() { showRewind(passage) }, 50)
+  }
 }
 
 function showEnd() {
